@@ -8,6 +8,7 @@ use ink_lang as ink;
 mod bountify {
 
     use crate::types::*;
+    use ink_prelude::vec::Vec;
     use ink_storage::{traits::SpreadAllocate, Mapping};
 
     #[ink(event)]
@@ -48,9 +49,7 @@ mod bountify {
     impl Bountify {
         #[ink(constructor)]
         pub fn new() -> Self {
-            Self {
-                ..Default::default()
-            }
+            ink_lang::utils::initialize_contract(|_| {})
         }
 
         #[ink(message, payable)]

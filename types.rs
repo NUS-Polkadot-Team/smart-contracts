@@ -1,4 +1,5 @@
 use ink_env::AccountId;
+use ink_prelude::string::String;
 use ink_primitives::Key;
 use ink_storage::traits::{PackedAllocate, PackedLayout, SpreadAllocate, SpreadLayout};
 
