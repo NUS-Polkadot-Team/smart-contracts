@@ -200,6 +200,15 @@ mod bountify {
             return bounties;
         }
 
+        #[ink(message)]
+        pub fn get_bounties_for_user(&self, account_id: AccountId) -> Vec<Bounty> {
+            self.bounty_lookup_table
+                .iter()
+                .map(|bounty_id| self.active_bounties.get(bounty_id).unwrap())
+                .filter(|bounty| bounty.ask.doer == account_id)
+                .collect()
+        }
+
         fn get_and_increment_bounty_counter(&mut self) -> u32 {
             let id = self.bounty_counter;
             self.bounty_counter += 1;
