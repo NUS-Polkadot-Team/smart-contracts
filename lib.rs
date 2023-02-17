@@ -1,15 +1,18 @@
 #![cfg_attr(not(feature = "std"), no_std)]
+#![feature(min_specialization)]
 
 mod types;
 
 use ink_lang as ink;
 
 #[ink::contract]
-mod bountify {
-
+pub mod bountify {
     use crate::types::*;
     use ink_prelude::vec::Vec;
     use ink_storage::{traits::SpreadAllocate, Mapping};
+    use openbrush::{
+        contracts::psp34::extensions::metadata::Data, contracts::psp34::*, traits::Storage,
+    };
 
     #[ink(event)]
     pub struct Bid {
@@ -39,12 +42,20 @@ mod bountify {
     }
 
     #[ink(storage)]
-    #[derive(SpreadAllocate, Default)]
+    #[derive(Storage, SpreadAllocate, Default)]
     pub struct Bountify {
         active_bounties: Mapping<u32, Bounty>,
         bounty_counter: u32,
         bounty_lookup_table: Vec<u32>,
+
+        #[storage_field]
+        psp34: psp34::Data,
+        #[storage_field]
+        metadata: Data,
+        next_id: u8,
     }
+
+    impl PSP34 for Bountify {}
 
     impl Bountify {
         #[ink(constructor)]
@@ -145,6 +156,10 @@ mod bountify {
                     .amount
                     .map(|_| chosen_bid.doer)
                     .unwrap_or(bounty.ask.doer);
+
+                // Mint PSP34
+                self._mint_to(receiver, Id::U8(self.next_id)).unwrap();
+                self.next_id += 1;
 
                 self.env()
                     .transfer(receiver, amount)
