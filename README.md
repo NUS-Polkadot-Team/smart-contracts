@@ -7,7 +7,7 @@ Built with ink! smart contracts.
 To get started, first build with `cargo`
 
 ```bash
-cargo build
+cargo +nightly contract build --release --optimization-passes=0
 ```
 
 ## Interface
